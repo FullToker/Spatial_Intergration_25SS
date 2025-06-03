@@ -8,23 +8,39 @@ import cv2
 from typing import Tuple, Optional
 import requests
 from io import BytesIO
+import os
 
 
 class ViTAttentionVisualizer:
-    def __init__(self, model_name: str = "google/vit-base-patch16-224"):
+    def __init__(
+        self, model_name: str = "google/vit-base-patch16-224", cache_dir: str = None
+    ):
         """
         Initialize the ViT attention visualizer.
 
         Args:
             model_name: HuggingFace model name for ViT
+            cache_dir: Directory to cache the model (defaults to ./models)
         """
+        # Set cache directory to current folder if not specified
+        if cache_dir is None:
+            cache_dir = os.path.join(os.getcwd(), "models")
+
+        # Create cache directory if it doesn't exist
+        os.makedirs(cache_dir, exist_ok=True)
+
+        print(f"Downloading/loading model to: {cache_dir}")
+
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        print(f"devide is {self.device}")
-        self.processor = ViTImageProcessor.from_pretrained(model_name)
+        self.processor = ViTImageProcessor.from_pretrained(
+            model_name, cache_dir=cache_dir
+        )
         self.model = ViTForImageClassification.from_pretrained(
-            model_name, output_attentions=True
+            model_name, output_attentions=True, cache_dir=cache_dir
         ).to(self.device)
         self.model.eval()
+
+        print(f"Model loaded successfully on {self.device}")
 
         # Get patch size and image size from config
         self.patch_size = self.model.config.patch_size
@@ -205,11 +221,12 @@ class ViTAttentionVisualizer:
 
 # Example usage
 def main():
-    # Initialize the visualizer
-    visualizer = ViTAttentionVisualizer()
+    # Initialize the visualizer with cache in current folder
+    print("Initializing ViT Attention Visualizer...")
+    visualizer = ViTAttentionVisualizer(cache_dir="./models")
 
     # Example with a map image (replace with your map image path)
-    image_path = "./src/figS3.3_ESOTC_2024_Temperature_annual_anomalies_map_ERA5.png"  # Replace with actual path
+    image_path = "./src/sample4.png"  # Replace with actual path
 
     try:
         # Visualize attention for the last layer
@@ -218,7 +235,7 @@ def main():
             image_path=image_path,
             layer_idx=-1,
             alpha=0.6,
-            save_path="fig3_3_attention_visualization.png",
+            save_path="./src/" + "S4_att_ori.png",
         )
 
         # Compare multiple layers
@@ -226,7 +243,7 @@ def main():
         visualizer.compare_layers(
             image_path=image_path,
             layers=[-4, -3, -2, -1],
-            save_path="fig3_3_layer_comparison.png",
+            save_path="./src/" + "S4_layers_ori.png",
         )
 
     except Exception as e:
@@ -309,7 +326,7 @@ class MapAttentionAnalyzer(ViTAttentionVisualizer):
         print("=" * 50)
 
         for i, region in enumerate(regions[:5]):  # Top 5 regions
-            print(f"Region {i+1}:")
+            print(f"Region {i + 1}:")
             print(f"  - Attention Score: {region['attention_score']:.3f}")
             print(f"  - Center: ({region['center'][0]:.1f}, {region['center'][1]:.1f})")
             print(f"  - Bounding Box: {region['bbox']}")
@@ -321,7 +338,10 @@ class MapAttentionAnalyzer(ViTAttentionVisualizer):
 
 # Usage example for maps
 """
-# Initialize map analyzer
+# Initialize map analyzer with custom cache directory
+map_analyzer = MapAttentionAnalyzer(cache_dir="./models")
+
+# Or use default cache in current folder
 map_analyzer = MapAttentionAnalyzer()
 
 # Analyze a map image
