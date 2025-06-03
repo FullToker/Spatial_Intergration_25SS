@@ -445,7 +445,7 @@ def main():
         visualizer_seg = None
 
     # Example image path
-    image_path = "./src/sample3.png"  # Replace with actual path
+    image_path = "./src/sample2.png"  # Replace with actual path
 
     try:
         # Test classification model
