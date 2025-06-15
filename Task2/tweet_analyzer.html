@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>推文数据统计分析</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            font-weight: 700;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .upload-section {
+            background: #f8f9fa;
+            border: 2px dashed #dee2e6;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-section:hover {
+            border-color: #667eea;
+            background: #f0f2ff;
+        }
+        
+        .file-upload-zone {
+            border: 2px dashed #dee2e6;
+            border-radius: 15px;
+            padding: 40px 20px;
+            margin: 20px 0;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #fafbfc;
+        }
+        
+        .file-upload-zone:hover {
+            border-color: #667eea;
+            background: #f0f2ff;
+            transform: translateY(-2px);
+        }
+        
+        .file-upload-zone.dragover {
+            border-color: #667eea;
+            background: #f0f2ff;
+            transform: scale(1.02);
+        }
+        
+        .file-upload-content {
+            pointer-events: none;
+        }
+        
+        .file-upload-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+            display: block;
+        }
+        
+        .file-upload-text {
+            font-size: 1.1em;
+            color: #495057;
+        }
+        
+        .file-upload-browse {
+            color: #667eea;
+            font-weight: 600;
+            text-decoration: underline;
+        }
+        
+        textarea {
+            width: 100%;
+            height: 200px;
+            padding: 15px;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px 5px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e9ecef;
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .stat-title {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+        
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f1f3f4;
+        }
+        
+        .stat-item:last-child {
+            border-bottom: none;
+        }
+        
+        .stat-label {
+            font-weight: 500;
+            color: #495057;
+        }
+        
+        .stat-value {
+            font-weight: 700;
+            color: #667eea;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        
+        .error {
+            background: #fff5f5;
+            border: 1px solid #fed7d7;
+            color: #c53030;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+        
+        .summary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .summary h2 {
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .summary-item {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .summary-number {
+            font-size: 2em;
+            font-weight: 700;
+            display: block;
+        }
+        
+        .summary-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 推文数据统计分析</h1>
+        
+        <div class="upload-section">
+            <h3>📤 输入推文JSON数据</h3>
+            <p style="margin: 10px 0; color: #666;">可以上传JSON文件或直接粘贴数据（JSON格式，可以是单条推文或推文数组）</p>
+            
+            <!-- 文件上传区域 -->
+            <div class="file-upload-zone" id="fileUploadZone">
+                <div class="file-upload-content">
+                    <div class="file-upload-icon">📁</div>
+                    <div class="file-upload-text">
+                        <strong>拖拽JSON文件到这里</strong> 或 <span class="file-upload-browse">点击选择文件</span>
+                    </div>
+                    <input type="file" id="fileInput" accept=".json" style="display: none;">
+                </div>
+            </div>
+            
+            <!-- 文件信息显示 -->
+            <div id="fileInfo" style="display: none; margin: 15px 0; padding: 10px; background: #e8f5e8; border-radius: 8px; color: #2d5f2d;">
+                <span id="fileName"></span> - <span id="fileSize"></span>
+            </div>
+            
+            <!-- 上传进度显示 -->
+            <div id="uploadProgress" style="display: none; margin: 15px 0;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <span id="progressText">正在读取文件...</span>
+                    <span id="progressPercent">0%</span>
+                </div>
+                <div class="progress-bar" style="height: 12px;">
+                    <div id="progressFill" class="progress-fill" style="width: 0%; transition: width 0.3s ease;"></div>
+                </div>
+                <div style="text-align: center; margin-top: 8px; font-size: 0.9em; color: #666;">
+                    <span id="processedSize">0 MB</span> / <span id="totalSize">0 MB</span>
+                    <span style="margin-left: 15px;">预计剩余: <span id="remainingTime">计算中...</span></span>
+                </div>
+            </div>
+            
+            <div style="margin: 20px 0; color: #666; text-align: center;">
+                <span>或者直接粘贴JSON数据：</span>
+            </div>
+            
+            <textarea id="jsonInput" placeholder='例如：[{"_id": "...", "text": "...", ...}, {...}]'></textarea>
+            <div>
+                <button class="btn" onclick="analyzeData()">🔍 开始分析</button>
+                <button class="btn" onclick="clearData()">🗑️ 清空数据</button>
+                <button class="btn" onclick="loadSampleData()">📋 加载示例数据</button>
+            </div>
+        </div>
+        
+        <div id="error" style="display: none;"></div>
+        <div id="results" style="display: none;"></div>
+    </div>
+
+    <script>
+        let tweetData = [];
+        
+        function loadSampleData() {
+            const sampleData = `[
+  {
+    "_id": "573233b795f75e19d74ade49",
+    "utc_offset": "7200",
+    "country_code": "ES",
+    "text": "Un toque de locura nunca viene mal, pues eso, HAKUNA MATATA 😊 @… https://t.co/DGajofgNVK",
+    "hashtags": "[]",
+    "profile_image_url": "http://pbs.twimg.com/profile_images/561852859000836096/nGltxfpU_normal.jpeg",
+    "bounding_box": {
+      "type": "Polygon",
+      "coordinates": "[[[-4.587928,36.635585],[-4.587928,36.894171],[-4.260134,36.894171],[-4.260134,36.635585]]]"
+    },
+    "coordinates": "[-4.46483776,36.72159228]",
+    "full_name": "Málaga, España",
+    "geo": {
+      "type": "Point",
+      "coordinates": "[36.72159228,-4.46483776]"
+    },
+    "id": "616629946",
+    "name": "Málaga",
+    "lang": "es",
+    "screen_name": "inmita96",
+    "country": "España",
+    "created_at": "Tue May 10 19:17:11 +0000 2016",
+    "time_zone": "Amsterdam",
+    "place_type": "city",
+    "timestamp_ms": "1462907831386",
+    "source": "<a href=\\"http://instagram.com\\" rel=\\"nofollow\\">Instagram</a>",
+    "followers_count": "736",
+    "in_reply_to_screen_name": "null",
+    "id_str": "730114479271325696",
+    "urls": "[{\\"url\\":\\"https://t.co/DGajofgNVK\\",\\"indices\\":[65,88],\\"expanded_url\\":\\"https://www.instagram.com/p/BFPPfQ6QQ6E2B5s1rR9jwG9leitUdGElJ0MM880/\\",\\"display_url\\":\\"instagram.com/p/BFPPfQ6QQ6E2…\\"}]",
+    "location": "Villanueva de la Concepción"
+  },
+  {
+    "_id": "573233b795f75e19d74ade4c",
+    "utc_offset": "7200",
+    "country_code": "FR",
+    "text": "Motion de censure : Valls ne «craint» pas le renversement de son gouvernement https://t.co/VaJm6hswH8 https://t.co/SZt5OP7oAK",
+    "hashtags": "[]",
+    "profile_image_url": "http://pbs.twimg.com/profile_images/726806794799054849/RiNXd3YM_normal.jpg",
+    "bounding_box": {
+      "type": "Polygon",
+      "coordinates": "[[[2.272565,48.814219],[2.272565,48.828441],[2.301278,48.828441],[2.301278,48.814219]]]"
+    },
+    "coordinates": "[2.2892648,48.8249147]",
+    "full_name": "Vanves, France",
+    "geo": {
+      "type": "Point",
+      "coordinates": "[48.8249147,2.2892648]"
+    },
+    "id": "2735908681",
+    "name": "Vanves",
+    "lang": "fr",
+    "screen_name": "VeilleDeCM",
+    "country": "France",
+    "created_at": "Tue May 10 19:17:11 +0000 2016",
+    "time_zone": "Paris",
+    "place_type": "city",
+    "timestamp_ms": "1462907831320",
+    "source": "<a href=\\"https://twitter.com/\\" rel=\\"nofollow\\">Client Twitter Web</a>",
+    "followers_count": "5392",
+    "in_reply_to_screen_name": "null",
+    "id_str": "730114478994558976",
+    "urls": "[{\\"url\\":\\"https://t.co/VaJm6hswH8\\",\\"indices\\":[78,101],\\"expanded_url\\":\\"http://l.leparisien.fr/Ae29-iLK8\\",\\"display_url\\":\\"l.leparisien.fr/Ae29-iLK8\\"}]",
+    "location": "Vanves, France"
+  }
+]`;
+            document.getElementById('jsonInput').value = sampleData;
+        }
+        
+        function clearData() {
+            document.getElementById('jsonInput').value = '';
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('error').style.display = 'none';
+        }
+        
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.innerHTML = `<div class="error">❌ ${message}</div>`;
+            errorDiv.style.display = 'block';
+        }
+        
+        function analyzeData() {
+            const input = document.getElementById('jsonInput').value.trim();
+            if (!input) {
+                showError('请输入JSON数据');
+                return;
+            }
+            
+            // 显示分析进度
+            showAnalysisProgress();
+            
+            // 使用 setTimeout 让UI有时间更新
+            setTimeout(() => {
+                try {
+                    showAnalysisStatus('正在解析JSON数据...');
+                    let data = JSON.parse(input);
+                    if (!Array.isArray(data)) {
+                        data = [data];
+                    }
+                    
+                    tweetData = data;
+                    showAnalysisStatus(`解析完成！共 ${data.length} 条推文，开始分析...`);
+                    
+                    // 分批处理数据
+                    setTimeout(() => {
+                        generateStatisticsAsync();
+                    }, 100);
+                    
+                    document.getElementById('error').style.display = 'none';
+                    
+                } catch (e) {
+                    hideAnalysisProgress();
+                    showError('JSON格式错误: ' + e.message);
+                }
+            }, 100);
+        }
+        
+        function showAnalysisProgress() {
+            const progressHtml = `
+                <div id="analysisProgress" style="margin: 20px 0; padding: 20px; background: #f8f9fa; border-radius: 15px; text-align: center;">
+                    <div style="font-size: 1.2em; font-weight: 600; color: #495057; margin-bottom: 15px;">
+                        🔄 正在分析数据...
+                    </div>
+                    <div class="progress-bar" style="height: 12px; margin-bottom: 10px;">
+                        <div id="analysisProgressFill" class="progress-fill" style="width: 0%; animation: pulse 2s infinite;"></div>
+                    </div>
+                    <div id="analysisStatus" style="color: #666; font-size: 0.9em;">
+                        准备开始...
+                    </div>
+                </div>
+                <style>
+                @keyframes pulse {
+                    0% { opacity: 1; }
+                    50% { opacity: 0.5; }
+                    100% { opacity: 1; }
+                }
+                </style>
+            `;
+            
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = progressHtml;
+            resultsDiv.style.display = 'block';
+        }
+        
+        function showAnalysisStatus(message) {
+            const statusElement = document.getElementById('analysisStatus');
+            if (statusElement) {
+                statusElement.textContent = message;
+            }
+        }
+        
+        function updateAnalysisProgress(percent) {
+            const progressFill = document.getElementById('analysisProgressFill');
+            if (progressFill) {
+                progressFill.style.width = percent + '%';
+            }
+        }
+        
+        function hideAnalysisProgress() {
+            const analysisProgress = document.getElementById('analysisProgress');
+            if (analysisProgress) {
+                analysisProgress.remove();
+            }
+        }
+        
+        function generateStatisticsAsync() {
+            const batchSize = 1000; // 每批处理1000条推文
+            const totalTweets = tweetData.length;
+            let processedCount = 0;
+            
+            const stats = {
+                total: totalTweets,
+                languages: {},
+                countries: {},
+                timezones: {},
+                sources: {},
+                placeTypes: {},
+                textLengths: [],
+                followerCounts: [],
+                coordinates: [],
+                hasGeo: 0,
+                hasHashtags: 0,
+                hasUrls: 0,
+                uniqueUsers: new Set(),
+                timeDistribution: {}
+            };
+            
+            function processBatch() {
+                const endIndex = Math.min(processedCount + batchSize, totalTweets);
+                const batch = tweetData.slice(processedCount, endIndex);
+                
+                // 处理当前批次
+                batch.forEach(tweet => {
+                    // 语言统计
+                    if (tweet.lang) {
+                        stats.languages[tweet.lang] = (stats.languages[tweet.lang] || 0) + 1;
+                    }
+                    
+                    // 国家统计
+                    if (tweet.country) {
+                        stats.countries[tweet.country] = (stats.countries[tweet.country] || 0) + 1;
+                    }
+                    
+                    // 时区统计
+                    if (tweet.time_zone) {
+                        stats.timezones[tweet.time_zone] = (stats.timezones[tweet.time_zone] || 0) + 1;
+                    }
+                    
+                    // 来源统计
+                    if (tweet.source) {
+                        let source = tweet.source.replace(/<[^>]*>/g, '');
+                        stats.sources[source] = (stats.sources[source] || 0) + 1;
+                    }
+                    
+                    // 地点类型统计
+                    if (tweet.place_type) {
+                        stats.placeTypes[tweet.place_type] = (stats.placeTypes[tweet.place_type] || 0) + 1;
+                    }
+                    
+                    // 文本长度
+                    if (tweet.text) {
+                        stats.textLengths.push(tweet.text.length);
+                    }
+                    
+                    // 粉丝数量
+                    if (tweet.followers_count) {
+                        const count = parseInt(tweet.followers_count);
+                        if (!isNaN(count)) {
+                            stats.followerCounts.push(count);
+                        }
+                    }
+                    
+                    // 地理位置
+                    if (tweet.coordinates || tweet.geo) {
+                        stats.hasGeo++;
+                        if (tweet.coordinates) {
+                            try {
+                                const coords = JSON.parse(tweet.coordinates);
+                                stats.coordinates.push(coords);
+                            } catch (e) {}
+                        }
+                    }
+                    
+                    // 标签和链接
+                    if (tweet.hashtags && tweet.hashtags !== '[]') {
+                        stats.hasHashtags++;
+                    }
+                    
+                    if (tweet.urls && tweet.urls !== '[]') {
+                        stats.hasUrls++;
+                    }
+                    
+                    // 用户统计
+                    if (tweet.screen_name) {
+                        stats.uniqueUsers.add(tweet.screen_name);
+                    }
+                    
+                    // 时间分布
+                    if (tweet.created_at) {
+                        const date = new Date(tweet.created_at);
+                        const hour = date.getHours();
+                        stats.timeDistribution[hour] = (stats.timeDistribution[hour] || 0) + 1;
+                    }
+                });
+                
+                processedCount = endIndex;
+                const progress = Math.round((processedCount / totalTweets) * 100);
+                
+                // 更新进度
+                updateAnalysisProgress(progress);
+                showAnalysisStatus(`已处理 ${processedCount.toLocaleString()} / ${totalTweets.toLocaleString()} 条推文 (${progress}%)`);
+                
+                if (processedCount < totalTweets) {
+                    // 继续处理下一批，给UI时间更新
+                    setTimeout(processBatch, 10);
+                } else {
+                    // 处理完成，显示结果
+                    showAnalysisStatus('分析完成！正在生成报告...');
+                    setTimeout(() => {
+                        hideAnalysisProgress();
+                        displayResults(stats);
+                    }, 500);
+                }
+            }
+            
+            // 开始处理
+            processBatch();
+        }
+        
+        function displayResults(stats) {
+            const resultsDiv = document.getElementById('results');
+            
+            // 计算统计值
+            const avgTextLength = stats.textLengths.length > 0 ? 
+                Math.round(stats.textLengths.reduce((a, b) => a + b, 0) / stats.textLengths.length) : 0;
+            
+            const avgFollowers = stats.followerCounts.length > 0 ? 
+                Math.round(stats.followerCounts.reduce((a, b) => a + b, 0) / stats.followerCounts.length) : 0;
+            
+            let html = `
+                <div class="summary">
+                    <h2>📋 数据概览</h2>
+                    <div class="summary-grid">
+                        <div class="summary-item">
+                            <span class="summary-number">${stats.total}</span>
+                            <span class="summary-label">总推文数</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-number">${stats.uniqueUsers.size}</span>
+                            <span class="summary-label">独立用户</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-number">${Object.keys(stats.languages).length}</span>
+                            <span class="summary-label">语言类型</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-number">${Object.keys(stats.countries).length}</span>
+                            <span class="summary-label">国家数量</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-number">${avgTextLength}</span>
+                            <span class="summary-label">平均字符数</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-number">${Math.round((stats.hasGeo / stats.total) * 100)}%</span>
+                            <span class="summary-label">有地理位置</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="stats-grid">
+            `;
+            
+            // 语言分布
+            html += createStatCard('🌐 语言分布', stats.languages, stats.total);
+            
+            // 国家分布
+            html += createStatCard('🌍 国家分布', stats.countries, stats.total);
+            
+            // 时区分布
+            html += createStatCard('🕐 时区分布', stats.timezones, stats.total);
+            
+            // 来源分布
+            html += createStatCard('📱 发布来源', stats.sources, stats.total);
+            
+            // 地点类型
+            if (Object.keys(stats.placeTypes).length > 0) {
+                html += createStatCard('📍 地点类型', stats.placeTypes, stats.total);
+            }
+            
+            // 文本统计
+            if (stats.textLengths.length > 0) {
+                const textStats = {
+                    '平均长度': avgTextLength,
+                    '最短': Math.min(...stats.textLengths),
+                    '最长': Math.max(...stats.textLengths),
+                    '总字符数': stats.textLengths.reduce((a, b) => a + b, 0)
+                };
+                html += createStatCard('📝 文本统计', textStats);
+            }
+            
+            // 粉丝统计
+            if (stats.followerCounts.length > 0) {
+                const followerStats = {
+                    '平均粉丝数': avgFollowers,
+                    '最少粉丝': Math.min(...stats.followerCounts),
+                    '最多粉丝': Math.max(...stats.followerCounts),
+                    '中位数': getMedian(stats.followerCounts)
+                };
+                html += createStatCard('👥 粉丝统计', followerStats);
+            }
+            
+            // 内容特征
+            const contentStats = {
+                '包含地理位置': `${stats.hasGeo} (${Math.round((stats.hasGeo / stats.total) * 100)}%)`,
+                '包含标签': `${stats.hasHashtags} (${Math.round((stats.hasHashtags / stats.total) * 100)}%)`,
+                '包含链接': `${stats.hasUrls} (${Math.round((stats.hasUrls / stats.total) * 100)}%)`
+            };
+            html += createStatCard('🏷️ 内容特征', contentStats);
+            
+            // 时间分布
+            if (Object.keys(stats.timeDistribution).length > 0) {
+                html += createStatCard('⏰ 发布时间分布（24小时制）', stats.timeDistribution, stats.total);
+            }
+            
+            html += '</div>';
+            
+            resultsDiv.innerHTML = html;
+            resultsDiv.style.display = 'block';
+        }
+        
+        function createStatCard(title, data, total = null) {
+            let html = `
+                <div class="stat-card">
+                    <div class="stat-title">${title}</div>
+            `;
+            
+            if (typeof data === 'object') {
+                const sortedEntries = Object.entries(data)
+                    .sort(([,a], [,b]) => b - a)
+                    .slice(0, 10); // 显示前10项
+                
+                sortedEntries.forEach(([key, value]) => {
+                    const percentage = total ? Math.round((value / total) * 100) : null;
+                    html += `
+                        <div class="stat-item">
+                            <span class="stat-label">${key}</span>
+                            <span class="stat-value">${value}${percentage ? ` (${percentage}%)` : ''}</span>
+                        </div>
+                    `;
+                    
+                    if (total && percentage) {
+                        html += `
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${percentage}%"></div>
+                            </div>
+                        `;
+                    }
+                });
+                
+                if (Object.keys(data).length > 10) {
+                    html += `<div class="stat-item"><span class="stat-label">... 还有 ${Object.keys(data).length - 10} 项</span></div>`;
+                }
+            }
+            
+            html += '</div>';
+            return html;
+        }
+        
+        function getMedian(arr) {
+            const sorted = [...arr].sort((a, b) => a - b);
+            const mid = Math.floor(sorted.length / 2);
+            return sorted.length % 2 !== 0 ? sorted[mid] : Math.round((sorted[mid - 1] + sorted[mid]) / 2);
+        }
+        
+        // 文件上传相关功能
+        function setupFileUpload() {
+            const fileUploadZone = document.getElementById('fileUploadZone');
+            const fileInput = document.getElementById('fileInput');
+            const fileInfo = document.getElementById('fileInfo');
+            const fileName = document.getElementById('fileName');
+            const fileSize = document.getElementById('fileSize');
+            const uploadProgress = document.getElementById('uploadProgress');
+            const progressText = document.getElementById('progressText');
+            const progressPercent = document.getElementById('progressPercent');
+            const progressFill = document.getElementById('progressFill');
+            const processedSize = document.getElementById('processedSize');
+            const totalSize = document.getElementById('totalSize');
+            const remainingTime = document.getElementById('remainingTime');
+            
+            // 点击上传区域
+            fileUploadZone.addEventListener('click', () => {
+                fileInput.click();
+            });
+            
+            // 文件选择
+            fileInput.addEventListener('change', (e) => {
+                handleFileSelect(e.target.files[0]);
+            });
+            
+            // 拖拽功能
+            fileUploadZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                fileUploadZone.classList.add('dragover');
+            });
+            
+            fileUploadZone.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                fileUploadZone.classList.remove('dragover');
+            });
+            
+            fileUploadZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                fileUploadZone.classList.remove('dragover');
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    handleFileSelect(files[0]);
+                }
+            });
+            
+            function handleFileSelect(file) {
+                if (!file) return;
+                
+                if (!file.name.toLowerCase().endsWith('.json')) {
+                    showError('请选择JSON格式的文件');
+                    return;
+                }
+                
+                // 显示文件信息
+                fileName.textContent = file.name;
+                fileSize.textContent = formatFileSize(file.size);
+                fileInfo.style.display = 'block';
+                
+                // 大文件警告
+                if (file.size > 50 * 1024 * 1024) { // 50MB
+                    showWarning(`文件较大 (${formatFileSize(file.size)})，读取可能需要一些时间，请耐心等待...`);
+                }
+                
+                // 显示进度条
+                uploadProgress.style.display = 'block';
+                progressText.textContent = '正在读取文件...';
+                progressPercent.textContent = '0%';
+                progressFill.style.width = '0%';
+                totalSize.textContent = formatFileSize(file.size);
+                processedSize.textContent = '0 MB';
+                remainingTime.textContent = '计算中...';
+                
+                // 使用分块读取大文件
+                readFileWithProgress(file);
+            }
+            
+            function readFileWithProgress(file) {
+                const chunkSize = 1024 * 1024; // 1MB chunks
+                const totalChunks = Math.ceil(file.size / chunkSize);
+                let currentChunk = 0;
+                let result = '';
+                const startTime = Date.now();
+                
+                function readNextChunk() {
+                    const start = currentChunk * chunkSize;
+                    const end = Math.min(start + chunkSize, file.size);
+                    const chunk = file.slice(start, end);
+                    
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        result += e.target.result;
+                        currentChunk++;
+                        
+                        // 更新进度
+                        const progress = (currentChunk / totalChunks) * 100;
+                        const processedBytes = Math.min(currentChunk * chunkSize, file.size);
+                        
+                        progressFill.style.width = progress + '%';
+                        progressPercent.textContent = Math.round(progress) + '%';
+                        processedSize.textContent = formatFileSize(processedBytes);
+                        
+                        // 计算剩余时间
+                        if (currentChunk > 1) {
+                            const elapsed = Date.now() - startTime;
+                            const rate = processedBytes / elapsed; // bytes per ms
+                            const remaining = (file.size - processedBytes) / rate;
+                            remainingTime.textContent = formatTime(remaining);
+                        }
+                        
+                        if (currentChunk < totalChunks) {
+                            // 使用 setTimeout 避免阻塞 UI
+                            setTimeout(readNextChunk, 10);
+                        } else {
+                            // 读取完成
+                            progressText.textContent = '文件读取完成！';
+                            document.getElementById('jsonInput').value = result;
+                            
+                            setTimeout(() => {
+                                uploadProgress.style.display = 'none';
+                                showSuccess(`文件 "${file.name}" 已成功加载！(${formatFileSize(file.size)})`);
+                            }, 500);
+                        }
+                    };
+                    
+                    reader.onerror = () => {
+                        showError('文件读取失败');
+                        uploadProgress.style.display = 'none';
+                    };
+                    
+                    reader.readAsText(chunk);
+                }
+                
+                readNextChunk();
+            }
+            
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+            
+            function formatTime(ms) {
+                if (ms < 1000) return '< 1秒';
+                const seconds = Math.floor(ms / 1000);
+                const minutes = Math.floor(seconds / 60);
+                const hours = Math.floor(minutes / 60);
+                
+                if (hours > 0) return `${hours}小时${minutes % 60}分钟`;
+                if (minutes > 0) return `${minutes}分钟${seconds % 60}秒`;
+                return `${seconds}秒`;
+            }
+        }
+        
+        function showSuccess(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.innerHTML = `<div style="background: #f0f9ff; border: 1px solid #0ea5e9; color: #0c4a6e; padding: 15px; border-radius: 10px; margin: 10px 0;">✅ ${message}</div>`;
+            errorDiv.style.display = 'block';
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 3000);
+        }
+        
+        function showWarning(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.innerHTML = `<div style="background: #fffbeb; border: 1px solid #f59e0b; color: #92400e; padding: 15px; border-radius: 10px; margin: 10px 0;">⚠️ ${message}</div>`;
+            errorDiv.style.display = 'block';
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+        
+        function clearData() {
+            document.getElementById('jsonInput').value = '';
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('error').style.display = 'none';
+            document.getElementById('fileInfo').style.display = 'none';
+            document.getElementById('uploadProgress').style.display = 'none';
+            document.getElementById('fileInput').value = '';
+        }
+        
+        // 页面加载时初始化
+        window.onload = function() {
+            loadSampleData();
+            setupFileUpload();
+        };
+    </script>
+</body>
+</html>

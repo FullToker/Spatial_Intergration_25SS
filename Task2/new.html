@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>推文数据统计分析</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+    <h1>📊 推文数据统计分析</h1>
+
+    <div class="upload-section">
+        <h3>📤 输入推文JSON数据</h3>
+        <p>建议400MB以内。大文件直接分析不展示原文。</p>
+        <div class="file-upload-zone" id="fileUploadZone">
+            <div class="file-upload-content">
+                <div class="file-upload-icon">📁</div>
+                <div class="file-upload-text">
+                    <strong>拖拽JSON文件到这里</strong> 或 <span class="file-upload-browse">点击选择文件</span>
+                </div>
+                <input type="file" id="fileInput" accept=".json" style="display:none;">
+            </div>
+        </div>
+        <div id="fileInfo" style="display:none;margin:15px 0;padding:10px;background:#e8f5e8;border-radius:8px;color:#2d5f2d;">
+            <span id="fileName"></span> - <span id="fileSize"></span>
+        </div>
+        <div id="uploadProgress" style="display:none;margin:15px 0;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                <span id="progressText">正在读取文件...</span>
+                <span id="progressPercent">0%</span>
+            </div>
+            <div class="progress-bar" style="height:12px;">
+                <div id="progressFill" class="progress-fill" style="width:0%;"></div>
+            </div>
+            <div style="text-align:center;margin-top:8px;font-size:0.9em;color:#666;">
+                <span id="processedSize">0 MB</span> / <span id="totalSize">0 MB</span>
+                <span style="margin-left:15px;">预计剩余: <span id="remainingTime">计算中...</span></span>
+            </div>
+        </div>
+    </div>
+
+    <div id="error" style="display:none;"></div>
+    <div id="results" style="display:none;"></div>
+</div>
+<script src="main.js"></script>
+</body>
+</html>
