@@ -1,0 +1,42 @@
+@import "node_modules/ol/ol.css";
+
+html, body {
+  margin: 0;
+  height: 100%;
+  padding: 0;
+}
+#map {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+}
+
+#my-map {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
+}
+
+#map-info {
+  position: absolute;
+  top: 10px;
+  right: 80px;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  line-height: 1.4;
+  z-index: 1000;
+}
+
+#map-info div {
+  margin-bottom: 5px;
+}
+
+#map-info div:last-child {
+  margin-bottom: 0;
+}

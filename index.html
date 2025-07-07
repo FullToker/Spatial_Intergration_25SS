@@ -1,0 +1,38 @@
+<!--DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/x-icon" href="https://openlayers.org/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v7.2.2/ol.css">
+    <script src="https://cdn.jsdelivr.net/npm/ol@v7.2.2/dist/ol.js"></script>
+    <script src="https://unpkg.com/ol-mapbox-style@9.4.0/dist/olms.js"></script>
+    <title>Using OpenLayers with Vite</title>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script type="module" src="./main.js">
+    </script>
+  </body>
+</html-->
+<html>
+  <head>
+    <link rel="stylesheet" href="style.css">
+
+    <!--Check for a newer version if you add the MapLibre GL library that way-->
+    <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+    <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet" />
+
+  </head>
+
+  <body>
+    <div id="my-map"></div>
+    <div id="map-info">
+      <div>Zoom Level: <span id="zoom-level">-</span></div>
+      <div>Center Coords: <span id="center-coords">-</span></div>
+    </div>
+    <script src="main.js"></script>
+  </body>
+</html>
+
+
