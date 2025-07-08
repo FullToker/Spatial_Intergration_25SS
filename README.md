@@ -34,32 +34,52 @@ A comprehensive computer vision project implementing Vision Transformer (ViT) at
 
 ---
 
-### Task 2: Tweet Data Analysis Dashboard
+### Task 2: Twitter VGI Analysis & Sentiment Comparison
 
 **Directory**: `Task2/`
 
-A web-based data analysis application for processing and visualizing tweet data with statistical analysis capabilities.
+A comprehensive Twitter data analysis project focusing on Volunteered Geographic Information (VGI) research with advanced sentiment analysis capabilities. This project analyzes large-scale Twitter datasets from major sporting events and compares traditional ML approaches with modern Large Language Models.
 
 #### Features
-- **Tweet Data Processing**: Parse and analyze tweet datasets
-- **Statistical Analysis**: Generate comprehensive statistics and metrics
-- **Interactive Dashboard**: Real-time data visualization
-- **Multi-threading**: Web worker implementation for performance
-- **Responsive Design**: Mobile-friendly interface
+- **Large-scale Twitter Data Processing**: Handle 40M+ tweet JSON datasets with streaming parsers
+- **Multi-event Analysis**: UEFA Champions League 2017 and Wimbledon 2017 datasets
+- **Advanced Sentiment Analysis**: Compare BERT-based models vs OpenAI GPT-4 API
+- **Geospatial Analysis**: Extract and process geographic coordinates and location data
+- **Multi-language Support**: Process tweets in multiple languages with translation
+- **Interactive Web Dashboard**: Real-time data visualization and exploration
+- **Performance Benchmarking**: Compare speed, accuracy, and cost across methods
 
 #### Key Components
-- `tweet_analyzer.html`: Main analysis dashboard
-- `main.js`: Core application logic
-- `script.js`: Data processing functions
-- `worker.js`: Web worker for background processing
-- `style.css`: UI styling and responsive design
-- `new.html`: Additional interface components
+- **Analysis Submodule** (`Analysis/`): Complete Twitter VGI analysis framework
+  - `Load_Pre/`: Data preprocessing and loading modules
+    - `read_Large_json.py`: Main Twitter JSON processor
+    - `Sent_ana.ipynb`: BERT-based sentiment analysis
+    - `geocsv_pre.ipynb`: Geocoding and CSV preprocessing
+    - `data/`: Processed UEFA and Tennis datasets
+  - `Eval_llm/`: LLM evaluation and comparison
+    - `first_eval.ipynb`: ChatGPT vs traditional methods comparison
+    - Analysis results and performance metrics
+  - `Show_data/`: Web visualization interface
+    - `tweet_analyzer.html`: Interactive analysis dashboard
+    - `visual_json.ipynb`: Data visualization notebooks
+  - `src/`: Generated plots and statistical analysis
+- **Web Interface**: Direct dashboard access
+  - `tweet_analyzer.html`: Main analysis dashboard
+  - `main.js`, `script.js`, `worker.js`: Core application logic
+  - `style.css`: UI styling and responsive design
 
 #### Technologies Used
-- **HTML/CSS/JavaScript**: Frontend implementation
-- **Web Workers**: Background data processing
-- **Chart.js**: Data visualization
-- **Responsive Design**: Cross-platform compatibility
+- **Python Stack**: pandas, numpy, transformers, torch, ijson
+- **Machine Learning**: DistilBERT (SST-2), OpenAI GPT-4 API
+- **Web Technologies**: HTML/CSS/JavaScript, Web Workers
+- **Data Processing**: Streaming JSON parsing, geospatial analysis
+- **Visualization**: Chart.js, matplotlib, interactive dashboards
+
+#### Research Applications
+- **Crisis Informatics**: Real-time event monitoring through social media
+- **Digital Geography**: Understanding spatial patterns in social media discourse
+- **Computational Social Science**: Automated content analysis method comparison
+- **Sports Analytics**: Fan sentiment and engagement analysis during major events
 
 ---
 
@@ -112,7 +132,12 @@ SDI/
 │   ├── vit_vis.py            # Visualization utilities
 │   ├── bubbleview-master/     # Interactive visualization framework
 │   └── src/                   # Generated analysis results
-├── Task2/                      # Tweet Data Analysis
+├── Task2/                      # Twitter VGI Analysis & Sentiment Comparison
+│   ├── Analysis/              # Twitter VGI analysis framework (submodule)
+│   │   ├── Load_Pre/         # Data preprocessing and loading
+│   │   ├── Eval_llm/         # LLM evaluation and comparison
+│   │   ├── Show_data/        # Web visualization interface
+│   │   └── src/              # Generated plots and statistics
 │   ├── tweet_analyzer.html    # Main dashboard
 │   ├── main.js               # Application logic
 │   ├── script.js             # Data processing
@@ -132,7 +157,7 @@ SDI/
 Each task demonstrates different aspects of spatial data integration:
 
 1. **Task 1**: Computer vision and attention mechanisms for spatial understanding
-2. **Task 2**: Data analysis and statistical processing of location-based social media data
+2. **Task 2**: Advanced Twitter VGI analysis with ML/LLM sentiment comparison and geospatial processing
 3. **Task 3**: Interactive web mapping and geospatial visualization
 
 ## Getting Started
