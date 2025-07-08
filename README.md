@@ -4,7 +4,7 @@ This repository contains three main spatial data integration and visualization p
 
 ## Projects Overview
 
-### Task 1: Vision Transformer Attention Visualization
+### Task 1: Measure the cognitive load
 
 **Directory**: `Task1/`
 
@@ -83,7 +83,7 @@ A comprehensive Twitter data analysis project focusing on Volunteered Geographic
 
 ---
 
-### Task 3: OpenLayers Interactive Map Application
+### Task 3: Zoom Level Generalisation Conception
 
 **Directory**: `Task3/my_ol/`
 
@@ -156,7 +156,7 @@ SDI/
 
 Each task demonstrates different aspects of spatial data integration:
 
-1. **Task 1**: Computer vision and attention mechanisms for spatial understanding
+1. **Task 1**: Computer vision and attention mechanisms for map understanding
 2. **Task 2**: Advanced Twitter VGI analysis with ML/LLM sentiment comparison and geospatial processing
 3. **Task 3**: Interactive web mapping and geospatial visualization
 
