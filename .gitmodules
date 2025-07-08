@@ -1,0 +1,3 @@
+[submodule "Task2/Analysis"]
+	path = Task2/Analysis
+	url = git@github.com:FullToker/SDI_Task2_TwitterVGI.git
