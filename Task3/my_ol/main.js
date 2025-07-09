@@ -14,7 +14,6 @@ function updateMapInfo() {
     `${center.lng.toFixed(6)}, ${center.lat.toFixed(6)}`;
 }
 
-map.on('load', updateMapInfo);
 map.on('move', updateMapInfo);
 map.on('zoom', updateMapInfo);
 
@@ -61,3 +60,41 @@ function hideFeatureInfo() {
     infoDiv.style.display = 'none';
   }
 }
+
+function setupZoomControls() {
+  const zoomInBtn = document.getElementById('zoom-in-custom');
+  const zoomOutBtn = document.getElementById('zoom-out-custom');
+  const jumpZoomBtn = document.getElementById('jump-zoom');
+  const zoomStepInput = document.getElementById('zoom-step');
+  const targetZoomInput = document.getElementById('target-zoom');
+
+  zoomInBtn.addEventListener('click', function() {
+    const step = parseFloat(zoomStepInput.value) || 1;
+    const currentZoom = map.getZoom();
+    map.setZoom(currentZoom + step);
+  });
+
+  zoomOutBtn.addEventListener('click', function() {
+    const step = parseFloat(zoomStepInput.value) || 1;
+    const currentZoom = map.getZoom();
+    map.setZoom(currentZoom - step);
+  });
+
+  jumpZoomBtn.addEventListener('click', function() {
+    const targetZoom = parseFloat(targetZoomInput.value);
+    if (!isNaN(targetZoom)) {
+      map.setZoom(targetZoom);
+    }
+  });
+
+  targetZoomInput.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+      jumpZoomBtn.click();
+    }
+  });
+}
+
+map.on('load', function() {
+  updateMapInfo();
+  setupZoomControls();
+});

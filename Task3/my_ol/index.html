@@ -31,6 +31,22 @@
       <div>Zoom Level: <span id="zoom-level">-</span></div>
       <div>Center Coords: <span id="center-coords">-</span></div>
     </div>
+    <div id="zoom-control">
+      <h3>Zoom Controls</h3>
+      <div class="control-group">
+        <label for="zoom-step">Zoom Step:</label>
+        <input type="number" id="zoom-step" min="0.1" max="5" step="0.1" value="1">
+      </div>
+      <div class="control-group">
+        <label for="target-zoom">Jump to Zoom:</label>
+        <input type="number" id="target-zoom" min="0" max="20" step="0.1" value="10">
+        <button id="jump-zoom">Jump</button>
+      </div>
+      <div class="control-group">
+        <button id="zoom-in-custom">Zoom In</button>
+        <button id="zoom-out-custom">Zoom Out</button>
+      </div>
+    </div>
     <script src="main.js"></script>
   </body>
 </html>
