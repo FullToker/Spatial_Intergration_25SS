@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+  <html>
+  <head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v7.2.2/ol.css">
+    <script src="https://cdn.jsdelivr.net/npm/ol@v7.2.2/dist/ol.js"></script>
+    <script src="https://unpkg.com/ol-mapbox-style@9.4.0/dist/olms.js"></script>
+    <style>
+      #map {position: absolute; top: 0; right: 0; bottom: 0; left: 0;}
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+  <script>
+	const styleJson = `basemap_web_top.json`;
+    
+	const attribution = new ol.control.Attribution({
+      collapsible: false,
+    });
+
+    const map = new ol.Map({
+      target: 'map',
+      controls: ol.control.defaults.defaults({attribution: false}).extend([attribution]),
+      view: new ol.View({
+        constrainResolution: true,
+        center: ol.proj.fromLonLat([0, 0]),
+        zoom: 2
+      })
+    });
+    olms.apply(map, styleJson);
+  </script>
+  </body>
+</html>

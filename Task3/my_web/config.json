@@ -1,0 +1,22 @@
+{
+  "options": {
+    "paths": {
+      "root": ".",
+      "styles": "styles",
+      "mbtiles": "data",
+      "sprites": "sprites"
+    }
+  },
+  "styles": {
+    "custom-style": {
+      "style": "map.json",
+      "serve_rendered": true,
+      "serve_data": true
+    }
+  },
+  "data": {
+    "switzerland": {
+      "mbtiles": "switzerland.mbtiles"
+    }
+  }
+}

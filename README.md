@@ -120,6 +120,48 @@ npm install
 npm run dev
 ```
 
+**Directory**: `Task3/my_web/`
+
+A tile server and mapping application using MBTiles vector data with custom styling capabilities. This project provides a complete solution for serving vector map tiles with custom styling and visualization.
+
+#### Features
+- **Vector Tile Server**: MBTiles-based data serving with Switzerland map data
+- **Custom Map Styling**: Comprehensive style configuration with Positron theme
+- **Multi-format Support**: Vector tiles, sprites, and font glyph support
+- **Web-based Preview**: HTML interface for style testing and visualization
+- **Flexible Configuration**: JSON-based configuration for styles and data sources
+
+#### Key Components
+- `config.json`: Main server configuration for paths and data sources
+- `data/`: Vector tile data storage
+  - `switzerland.mbtiles`: Switzerland vector tile dataset
+- `styles/`: Map styling configurations
+  - `map.json`: Complete Positron-style map configuration with layers
+- `sprites/`: Icon sprites for map symbols
+  - `sprite.json`, `sprite.png`, `sprite@2x.png`: Icon definitions and assets
+- `test_data/`: Testing environment with sample configurations
+  - `config.json`: Test server configuration
+  - `styles/`: Test style configurations (OSM Bright, MapTiler Basic)
+  - `fonts/`: Font glyph collections (Open Sans variants)
+  - `zurich_switzerland.mbtiles`: Zurich-focused test dataset
+
+#### Development
+1. Slice/Tile the geographical data
+```bash
+docker run -it --rm -v $(pwd):/data ghcr.io/systemed/tilemaker:master /data/monaco-latest.osm.pbf --output /data/monaco-latest.pmtiles
+```
+2. Run the Tiles server
+```bash
+docker run --rm -it -v /your/local/config/path:/data -p 8080:8080 maptiler/tileserver-gl:latest
+```
+
+#### Technologies Used
+- **MBTiles**: Vector tile storage format
+- **Mapbox GL JS**: Web mapping library for rendering
+- **Vector Tiles**: Efficient geospatial data format
+- **JSON Styling**: Mapbox Style Specification
+- **PBF Fonts**: Protocol buffer font glyphs
+
 ---
 
 ## Repository Structure
@@ -144,11 +186,17 @@ SDI/
 │   ├── worker.js             # Background processing
 │   └── style.css             # UI styling
 ├── Task3/                      # Interactive Web Mapping
-│   └── my_ol/                # OpenLayers application
-│       ├── map_style/        # Custom map styles
-│       ├── main.js           # Mapping logic
-│       ├── style.css         # UI styling
-│       └── index.html        # Main interface
+│   ├── my_ol/                # OpenLayers application
+│   │   ├── map_style/        # Custom map styles
+│   │   ├── main.js           # Mapping logic
+│   │   ├── style.css         # UI styling
+│   │   └── index.html        # Main interface
+│   └── my_web/               # MBTiles vector tile server
+│       ├── config.json       # Server configuration
+│       ├── data/             # Vector tile datasets
+│       ├── styles/           # Map styling definitions
+│       ├── sprites/          # Icon sprites and assets
+│       └── test_data/        # Test configurations and datasets
 └── README.md                   # This documentation
 ```
 
@@ -159,6 +207,8 @@ Each task demonstrates different aspects of spatial data integration:
 1. **Task 1**: Computer vision and attention mechanisms for map understanding
 2. **Task 2**: Advanced Twitter VGI analysis with ML/LLM sentiment comparison and geospatial processing
 3. **Task 3**: Interactive web mapping and geospatial visualization
+   - **my_ol/**: Client-side web mapping with OpenLayers
+   - **my_web/**: Server-side vector tile serving with MBTiles
 
 ## Getting Started
 
@@ -166,7 +216,9 @@ Each task can be run independently:
 
 - **Task 1**: Requires Python with PyTorch and computer vision libraries
 - **Task 2**: Web-based application - open HTML files in browser
-- **Task 3**: Node.js application with modern build tools
+- **Task 3**: 
+  - **my_ol/**: Node.js application with modern build tools
+  - **my_web/**: MBTiles tile server (requires compatible tile server software)
 
 ## Contributing
 

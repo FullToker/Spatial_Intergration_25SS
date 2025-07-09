@@ -1,0 +1,35 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+   <title>basemap.de Web Vektor - MapLibre GL JS Demo</title>
+   <script src='https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.js'></script>
+   <link href='https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.css' rel='stylesheet' />
+   <style>
+      body {
+         margin: 0;
+         padding: 0;
+      }
+
+      #map {
+         position: absolute;
+         top: 0;
+         bottom: 0;
+         width: 100%;
+      }
+   </style>
+</head>
+
+<body>
+   <div id="map" class="map"></div>
+   <script>
+      var map = new maplibregl.Map({
+         container: 'map',
+         style: 'mystyle.json',
+         center: [10, 51],
+         zoom: 6,
+      });
+   </script>
+</body>
+
+</html>
